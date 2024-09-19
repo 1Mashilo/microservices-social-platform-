@@ -5,14 +5,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: sh -c 'sleep 15 && python manage.py runserver 0.0.0.0:8000'
+    command: sh -c 'sleep 15 && python main.py runserver 0.0.0.0:8000'
     ports:
       - "5000:5000"
     volumes:
       - .:/app
     depends_on:
       - db
-      - rabbitmq 
     env_file:
       - ./.env
 
@@ -22,19 +21,10 @@ services:
     env_file:
       - ./.env
     ports:
-      - "3309:3306"
+      - "33068:3306"
     volumes:
       - db_data:/var/lib/mysql
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    restart: always
-    ports:
-      - "5672:5672" 
-      - "15672:15672" 
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
 
 volumes:
   db_data:
