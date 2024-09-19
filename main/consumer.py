@@ -1,49 +1,60 @@
-# RabbitMQ Consumer Configuration for Flask Backend
+"""
+This module defines a RabbitMQ consumer for the Flask backend service. 
 
-# Import necessary libraries
+It listens to the 'main' queue for messages related to product actions 
+(create, update, delete) and performs corresponding database operations 
+to keep the Flask backend's product data in sync with the Django admin service.
+"""
+
 import pika
 import json
-from flask import Flask
-from main import db, Product
-from main import app 
 
-# Configure RabbitMQ connection
+from main import Product, db
+
 params = pika.URLParameters('amqp://guest:guest@localhost:5672/')
-connection = pika.BlockingConnection(params)
-channel = connection.channel()
+connection = pika.BlockingConnection(params) 
+channel = connection.channel()  
 
-# Declare the RabbitMQ queue
-channel.queue_declare(queue='main')
+channel.queue_declare(queue='main')  
 
-# Define the callback function for handling received messages
+
 def callback(ch, method, properties, body):
-    print('Received in main (Flask backend):', body.decode())
+    """
+    Callback function to handle messages received from the 'main' queue.
 
-    # Parse the received message data
-    data = json.loads(body)
+    Args:
+        ch: The channel object.
+        method: The method object.
+        properties: The properties object containing message metadata.
+        body: The message body (bytes).
+    """
+    print('Received in main')
+    data = json.loads(body)  
+    print(data)
 
-    # Handle the message based on its content type
     if properties.content_type == 'product_created':
         product = Product(id=data['id'], title=data['title'], image=data['image'])
         db.session.add(product)
         db.session.commit()
+        print('Product Created')
 
     elif properties.content_type == 'product_updated':
         product = Product.query.get(data['id'])
-        if product:
-            product.title = data['title']
-            product.image = data['image']
-            db.session.commit()
+        product.title = data['title']
+        product.image = data['image']
+        db.session.commit()
+        print('Product Updated')
 
     elif properties.content_type == 'product_deleted':
-        product = Product.query.get(data['id'])
-        if product:
-            db.session.delete(product)
-            db.session.commit()
+        product = Product.query.get(data) 
+        db.session.delete(product)
+        db.session.commit()
+        print('Product Deleted')
 
-# Set up the consumer to listen for messages on the "main" queue
+
 channel.basic_consume(queue='main', on_message_callback=callback, auto_ack=True)
 
-# Start consuming messages
-print('Waiting for messages from "admin" (Django backend). To exit, press CTRL+C')
-channel.start_consuming()
+print('Started Consuming')
+
+channel.start_consuming() 
+channel.close() 
