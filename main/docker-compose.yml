@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: sh -c 'sleep 15 && python main.py runserver 0.0.0.0:8000'
+    command: sh -c 'sleep 15 && python main.py  0.0.0.0:5000'
     ports:
       - "5000:5000"
     volumes:
@@ -14,6 +14,15 @@ services:
       - db
     env_file:
       - ./.env
+
+  
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: 'python -u consumer.py'
+    depends_on:
+      - db
 
   db:
     image: mysql:latest
