@@ -8,8 +8,9 @@ to the 'admin' queue.
 
 import pika
 import json
+import producer
 
-params = pika.URLParameters('amqp://guest:guest@localhost:5672/')
+params = pika.URLParameters('amqp://guest:guest@python-app-rabbitmq-1:5672/')
 
 connection = pika.BlockingConnection(params)  
 channel = connection.channel() 

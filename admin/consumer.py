@@ -15,7 +15,8 @@ django.setup()
 
 from products.models import Product
 
-params = pika.URLParameters('amqp://guest:guest@localhost:5672/')
+params = pika.URLParameters('amqp://guest:guest@python-app-rabbitmq-1:5672/')
+
 connection = pika.BlockingConnection(params)
 channel = connection.channel()
 
