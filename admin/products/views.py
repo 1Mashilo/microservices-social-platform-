@@ -57,7 +57,7 @@ class ProductViewSet(viewsets.ViewSet):
         serializer = ProductSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            publish_to_main('product_created', serializer.data)
+            publish('product_created', serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -103,7 +103,7 @@ class ProductViewSet(viewsets.ViewSet):
         serializer = ProductSerializer(product, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            publish_to_main('product_updated', serializer.data)
+            publish('product_updated', serializer.data)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -126,7 +126,7 @@ class ProductViewSet(viewsets.ViewSet):
             return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
 
         product.delete()
-        publish_to_main('product_deleted', pk)
+        publish('product_deleted', pk)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 # APIView to retrieve a random User ID
