@@ -4,7 +4,7 @@ from flask import Flask, jsonify, abort
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import UniqueConstraint
-from producer import publish_to_main 
+from producer import publish 
 from dataclasses import dataclass
 from urllib.parse import quote_plus
 import requests

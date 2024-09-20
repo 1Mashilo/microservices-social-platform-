@@ -5,7 +5,7 @@ from rest_framework import status, viewsets
 from .serializers import ProductSerializer
 from .models import Product, User
 from django.http import HttpResponse
-from .producer import publish_to_main
+from .producer import publish
 
 # Simple view to return 'hello world'
 def index(request):
