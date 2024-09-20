@@ -7,6 +7,9 @@ ENV PYTHONUNBUFFERED 1
 # Set the working directory inside the container to /app
 WORKDIR /app
 
+# Install netcat
+RUN apt-get update && apt-get install -y netcat-openbsd
+
 # Copy the requirements file from the host to the container
 COPY requirements.txt /app/requirements.txt
 
