@@ -9,3 +9,7 @@ class ProductsConfig(AppConfig):
         name (str): The name of the application ('products').
     """
     name = 'products'
+
+class UserConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'user'
