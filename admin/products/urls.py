@@ -1,5 +1,6 @@
+# products/urls.py
 from django.urls import path
-from .views import ProductViewSet, UserAPIView, index
+from .views import ProductViewSet, UserAPIView, UserRegisterView, index
 
 urlpatterns = [
     path('products', ProductViewSet.as_view({
@@ -14,5 +15,6 @@ urlpatterns = [
     }), name='product-detail'),
 
     path('user', UserAPIView.as_view(), name='user-list'),
+    path('register', UserRegisterView.as_view(), name='user-register'),  
     path('index', index, name='index'),
 ]
