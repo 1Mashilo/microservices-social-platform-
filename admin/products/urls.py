@@ -1,6 +1,7 @@
-# products/urls.py
 from django.urls import path
-from .views import ProductViewSet, UserAPIView, UserRegisterView, index
+from .views import (
+    ProductViewSet, loginView, registerView, index, logoutView, user, CookieTokenRefreshView
+)
 
 urlpatterns = [
     path('products', ProductViewSet.as_view({
@@ -14,7 +15,9 @@ urlpatterns = [
         'delete': 'delete',
     }), name='product-detail'),
 
-    path('user', UserAPIView.as_view(), name='user-list'),
-    path('register', UserRegisterView.as_view(), name='user-register'),  
-    path('index', index, name='index'),
+    path('login', loginView, name='login'),
+    path('register', registerView, name='register'),
+    path('refresh-token', CookieTokenRefreshView.as_view(), name='refresh-token'),
+    path('logout', logoutView, name='logout'),
+    path('user', user, name='user'),
 ]
