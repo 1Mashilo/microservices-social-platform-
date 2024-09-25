@@ -1,46 +1,39 @@
 from rest_framework import serializers
 from .models import Product
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
+from rest_framework.validators import UniqueValidator
+from django.contrib.auth.password_validation import validate_password
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
 
-class RegistrationSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(style={"input_type": "password"})
+class RegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=True)
 
     class Meta:
-        model = get_user_model()
-        fields = ("first_name", "last_name", "email", "password", "password2")
-        extra_kwargs = {
-            "password": {"write_only": True},
-            "password2": {"write_only": True}
-        }
+        model = User
+        fields = ('username', 'password', 'password2', 'email', 'first_name', 'last_name')
+        extra_kwargs = {'first_name': {'required': True}, 'last_name': {'required': True}}
 
-    def save(self):
-        user = get_user_model()(
-            email=self.validated_data["email"],
-            first_name=self.validated_data["first_name"],
-            last_name=self.validated_data["last_name"],
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
+        return attrs
+
+    def create(self, validated_data):
+        user = User.objects.create(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name']
         )
-
-        password = self.validated_data["password"]
-        password2 = self.validated_data["password2"]
-
-        if password != password2:
-            raise serializers.ValidationError({"password": "Passwords do not match!"})
-
-        user.set_password(password)
+        user.set_password(validated_data['password'])
         user.save()
-
         return user
-
-class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField(style={"input_type": "password"}, write_only=True)
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = get_user_model()
-        fields = ("id", "email", "is_staff", "first_name", "last_name")
