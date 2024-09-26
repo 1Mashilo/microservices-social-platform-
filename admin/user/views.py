@@ -1,6 +1,7 @@
 """
 This module provides views for user signup and login functionalities in a Django application.
-It includes enhanced validation for user input and generates authentication tokens for users.
+It includes enhanced validation for user input, generates authentication tokens for users, and 
+provides a viewset for viewing user profiles.
 """
 
 from django.http import JsonResponse
@@ -11,6 +12,9 @@ from rest_framework.authtoken.models import Token
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from .models import Profile
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from .serializers import ProfileSerializer
 import json
 
 @csrf_exempt 
@@ -106,3 +110,11 @@ def user_login(request):
             return JsonResponse({'error': 'Invalid JSON data'}, status=400)
     else:
         return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
+
+class ProfileViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    API endpoint that allows profiles to be viewed.
+    """
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [] 
