@@ -56,7 +56,7 @@ def index():
 
 @app.route('/api/products/<int:id>/like', methods=['POST'])
 def like(id):
-    req = requests.get('http://docker.for.win.localhost:8000/api/user')
+    req = requests.get('http://127.0.0.1:8000/api/user/') 
     json = req.json()
 
     try:
@@ -72,6 +72,22 @@ def like(id):
         'message': 'success',
         'id': json['id']
     })
+
+@app.route('/api/users/<int:user_id>/profile', methods=['GET'])
+def view_profile(user_id):
+    try:
+        # Make a request to the Django API to fetch the profile
+        response = requests.get(f'http://127.0.0.1:8000/api/profiles/{user_id}/')
+
+        if response.status_code == 200:
+            profile_data = response.json()
+            return jsonify(profile_data)
+        else:
+            return jsonify({'error': 'Profile not found'}), 404
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': 'Error fetching profile data'}), 500
+
 
 # ------------------------------------------------------------------------
 if __name__ == '__main__':
