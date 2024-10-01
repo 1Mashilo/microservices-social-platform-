@@ -1,0 +1,118 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static 'assets/images/favicon.png' %}" rel="icon" type="image/png">
+    <title>Settings</title>
+    <link rel="stylesheet" href="{% static 'assets/css/combined.min.css' %}"> 
+    <style>
+        /* Custom styles for enhanced UI */
+        .form-container {
+            background-color: #f9fafb;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .section-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            transition: border-color 0.2s ease;
+        }
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .save-button {
+            background-color: #2563eb;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s ease;
+        }
+        .save-button:hover {
+            background-color: #1d4ed8;
+        }
+        .cancel-button {
+            background-color: #f9fafb;
+            color: #ef4444;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+        }
+        .cancel-button:hover {
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">
+            <a href="/">Home</a> / Account Settings for <b>{{ user.username }}</b>
+        </h1>
+
+        <form action="" method="POST" enctype="multipart/form-data" class="form-container">
+            {% csrf_token %}
+
+            <!-- General Section -->
+            <fieldset>
+                <legend class="section-header">General</legend>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Profile Image -->
+                    <div class="form-group">
+                        <label for="profile_image" class="block text-gray-700">Profile Image</label>
+                        <img src="{{ user_profile.profileimg.url }}" alt="{{ user.username }}'s Profile Picture" class="w-24 h-24 rounded-full mb-3"/>
+                        <input type="file" id="profile_image" name="image" class="form-input bg-gray-100">
+                    </div>
+
+                    <!-- Bio -->
+                    <div class="form-group">
+                        <label for="bio" class="block text-gray-700">Bio</label>
+                        <textarea id="bio" name="bio" rows="3" class="form-textarea bg-gray-100">{{ user_profile.bio }}</textarea>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="form-group col-span-2">
+                        <label for="location" class="block text-gray-700">Location</label>
+                        <input type="text" id="location" name="location" value="{{ user_profile.location }}" class="form-input bg-gray-100">
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Privacy Section -->
+            <fieldset class="mt-8">
+                <legend class="section-header">Privacy</legend>
+                <div class="form-group">
+                    <label for="who_can_follow" class="block text-gray-700">Who can follow me?</label>
+                    <div class="flex items-center mt-2">
+                        <input type="checkbox" id="who_can_follow" class="form-checkbox h-5 w-5 text-blue-600">
+                        <span class="ml-2 text-gray-700">Enable followers</span>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Buttons -->
+            <div class="mt-8 flex justify-end space-x-4">
+                <a href="/" class="cancel-button">Cancel</a>
+                <button type="submit" class="save-button">Save</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="{% static 'assets/js/combined.min.js' %}"></script> 
+</body>
+</html>
