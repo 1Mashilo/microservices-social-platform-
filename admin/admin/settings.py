@@ -43,8 +43,9 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'products',
-    'user',
 ]
+
+ROOT_URLCONF = 'social_book.urls'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
