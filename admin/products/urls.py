@@ -1,22 +1,15 @@
 from django.urls import path
-from .views import (
-    register_user, login_user
-)
+from . import views
 
 urlpatterns = [
-    path('products', ProductViewSet.as_view({
-        'get': 'list',
-        'post': 'create',
-    }), name='product-list'),
-
-    path('products/<str:pk>', ProductViewSet.as_view({
-        'get': 'retrieve',
-        'put': 'update',
-        'delete': 'delete',
-    }), name='product-detail'),
-
-    path('register/', register_user, name='register'),
-    path('login/', login_user, name='login'),
-
-    
+    path('', views.index, name='index'),
+    path('settings', views.settings, name='settings'),
+    path('upload', views.upload, name='upload'),
+    path('follow', views.follow, name='follow'),
+    path('search', views.search, name='search'),
+    path('profile/<str:pk>', views.profile, name='profile'),
+    path('like-post', views.like_post, name='like-post'),
+    path('signup', views.signup, name='signup'),
+    path('signin', views.signin, name='signin'),
+    path('logout', views.logout, name='logout'),
 ]
