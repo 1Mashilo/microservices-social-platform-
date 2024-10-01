@@ -8,4 +8,4 @@ class ProductsConfig(AppConfig):
     Attributes:
         name (str): The name of the application ('products').
     """
-    name = 'products'
+    name = 'core'
