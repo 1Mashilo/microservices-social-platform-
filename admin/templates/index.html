@@ -1,85 +1,127 @@
-    <!-- Load the static files -->
-    {% load static %}
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Social Platform - Feed</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    </head>
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="/">Social Platform</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/profile/{{ user_profile.user.username }}">Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/logout">Logout</a>
-                    </li>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Platform - Feed</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"> 
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif; 
+        }
+        /* Style for the upload form container */
+        .upload-form-container {
+            background-color: #f8f9fa; /* Light gray background */
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">Social Platform</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile/{{ user_profile.user.username }}">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <img class="card-img-top" src="{{ user_profile.profileimg.url }}" alt="Profile Picture">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ user_profile.user.username }}</h5>
+                        <p class="card-text">{{ user_profile.bio }}</p>
+                        <p class="card-text"><small>{{ user_profile.location }}</small></p>
+                        <a href="/settings" class="btn btn-primary">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h3>Feed</h3>
+
+                <div class="upload-form-container"> 
+                    <form action="upload" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <input type="file" class="form-control-file" name="image_upload" id="image_upload" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" name="caption" placeholder="Write a caption..." rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </form>
+                </div>
+
+                <div class="feed">
+                    {% for post in posts %}
+                        <div class="card mb-4">
+                            <img class="card-img-top" src="{{ post.image.url }}" alt="Post Image">
+                            <div class="card-body">
+                                <h5 class="card-title"><a href="/profile/{{post.user}}"><strong>{{post.user}}</strong></a></h5> 
+                                <p class="card-text">{{ post.caption }}</p>
+                                <a href="/like_post?post_id={{ post.id }}" class="btn btn-outline-primary">
+                                    Like ({{ post.no_of_likes }})
+                                </a>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>No posts to show.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <h5>Suggestions for You</h5>
+                <ul class="list-group">
+                    {% for suggestion in suggestions_username_profile_list %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <img src="{{ suggestion.profileimg.url }}" alt="Suggestion Profile" class="rounded-circle" width="30" height="30">
+                                <a href="/profile/{{ suggestion.user.username }}">{{ suggestion.user.username }}</a>
+                            </div>
+                            <button onclick="followUser('{{ suggestion.user.username }}')" class="btn btn-sm btn-primary">Follow</button> 
+                        </li>
+                    {% endfor %}
                 </ul>
             </div>
-        </nav>
-    
-        <div class="container mt-4">
-            <div class="row">
-                <!-- User Profile Card -->
-                <div class="col-md-3">
-                    <div class="card">
-                        <img class="card-img-top" src="{{ user_profile.profileimg.url }}" alt="Profile Picture">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ user_profile.user.username }}</h5>
-                            <p class="card-text">{{ user_profile.bio }}</p>
-                            <p class="card-text"><small>{{ user_profile.location }}</small></p>
-                            <a href="/settings" class="btn btn-primary">Edit Profile</a>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Feed Section -->
-                <div class="col-md-6">
-                    <h3>Feed</h3>
-                    <div class="feed">
-                        {% for post in posts %}
-                            <div class="card mb-4">
-                                <img class="card-img-top" src="{{ post.image.url }}" alt="Post Image">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ post.user }}</h5>
-                                    <p class="card-text">{{ post.caption }}</p>
-                                    <a href="/like_post?post_id={{ post.id }}" class="btn btn-outline-primary">
-                                        Like ({{ post.no_of_likes }})
-                                    </a>
-                                </div>
-                            </div>
-                        {% empty %}
-                            <p>No posts to show.</p>
-                        {% endfor %}
-                    </div>
-                </div>
-    
-                <!-- Suggestions Section -->
-                <div class="col-md-3">
-                    <h5>Suggestions for You</h5>
-                    <ul class="list-group">
-                        {% for suggestion in suggestions_username_profile_list %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <img src="{{ suggestion.profileimg.url }}" alt="Suggestion Profile" class="rounded-circle" width="30" height="30">
-                                    <a href="/profile/{{ suggestion.user.username }}">{{ suggestion.user.username }}</a>
-                                </div>
-                                <a href="/follow" class="btn btn-sm btn-primary">Follow</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
         </div>
-    
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    </body>
-    </html>
-    
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function followUser(username) {
+            $.ajax({
+                type: 'POST',
+                url: '/follow/', 
+                data: { 
+                    follower: '{{ user_profile.user.username }}', 
+                    user: username, 
+                    csrfmiddlewaretoken: '{{ csrf_token }}' 
+                },
+                success: function(response) {
+                    console.log('Followed ' + username); 
+                },
+                error: function(response) {
+                    console.error('Error following user:', response);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
